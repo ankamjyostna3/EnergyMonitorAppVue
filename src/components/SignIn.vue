@@ -1,20 +1,20 @@
 <template>
-    <div>
-      <h2>Sign In</h2>
-      <form @submit.prevent="signIn">
-        <div>
-          <label for="username">Username:</label>
-          <input v-model="username" type="text" id="username" required />
-        </div>
-        <div>
-          <label for="password">Password:</label>
-          <input v-model="password" type="password" id="password" required />
-        </div>
-        <button type="submit">Sign In</button>
-      </form>
-      <p v-if="errorMessage">{{ errorMessage }}</p>
-    </div>
-  </template>
+  <div>
+    <h2>Sign In</h2>
+    <form @submit.prevent="signIn">
+      <div>
+        <label for="username">Username:</label>
+        <input v-model="username" type="text" id="username" required />
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input v-model="password" type="password" id="password" required />
+      </div>
+      <button type="submit">Sign In</button>
+    </form>
+    <p v-if="errorMessage">{{ errorMessage }}</p>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -29,6 +29,7 @@
     },
     methods: {
       async signIn() {
+        console.log('Signing in...');
         try {
           const response = await axios.post(process.env.VUE_APP_LOGIN_API_URL, {
             username: this.username,
@@ -38,7 +39,7 @@
               'Content-Type': 'application/json',
             }
           });
-          console.log('Sign-in successful:', response.data.token);
+          console.log('Sign-in successful:', response);
           // Save the token in session storage
         sessionStorage.setItem('authToken', response.data.token);
 
