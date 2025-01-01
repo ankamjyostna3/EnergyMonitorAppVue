@@ -39,7 +39,6 @@ export default {
       }
     },
     async handleSubmit() {
-      console.log('Submitting form with data:', { energy: this.energy, date: this.date });
       if (this.energy === '' || this.energy < 0) {
         this.errorMessage = 'Please enter a valid energy value.';
         return;
@@ -53,7 +52,6 @@ export default {
           return;
         }
 
-        console.log('Token:', token);
 
         const response = await axios.post(process.env.VUE_APP_ENERGY_INPUT_API_URL, {
           energy: this.energy,
@@ -65,7 +63,6 @@ export default {
           }
         });
 
-        console.log('Response received:', response);
 
         if (response.status === 200 && response.data.success) {
           this.successMessage = 'Energy data saved successfully!';

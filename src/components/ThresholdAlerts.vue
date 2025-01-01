@@ -34,7 +34,6 @@ export default {
       this.showModal = true;
       try {
         const token = sessionStorage.getItem('authToken');
-        console.log('Token:', token); // Log the token
 
         // Call the backend API to get the alerts
         const response = await axios.get(process.env.VUE_APP_ALERTS_API_URL, {
@@ -43,7 +42,6 @@ export default {
           }
         });
 
-        console.log('API response:', response.data.Threshold); // Log the API response
 this.threshold = response.data.Threshold;
       
       } catch (error) {
@@ -55,25 +53,15 @@ this.threshold = response.data.Threshold;
       if (String(this.alertInput).trim() && this.alertInput >= 0) {
         try {
           const token = sessionStorage.getItem('authToken');
-          console.log('Token:', token); // Log the token
 
           // Call the backend API to submit the alert
-          const response = await axios.post(process.env.VUE_APP_ALERTS_API_URL, {
+          await axios.post(process.env.VUE_APP_ALERTS_API_URL, {
             threshold: this.alertInput
           }, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
-
-          console.log('API response:', response); // Log the API response
-
-          // // Ensure alerts is an array before pushing
-          // if (Array.isArray(this.alerts)) {
-          //   this.alerts.push(this.alertInput);
-          // } else {
-          //   console.error('alerts is not an array:', this.alerts);
-          // }
           this.alertInput = '';
           this.errorMessage = '';
           this.showModal = false;

@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     async handleFileUpload(event) {
-      console.log('Selected file:', event.target.files[0]);
       this.file = event.target.files[0];
       if (this.file) {
         try {
@@ -63,7 +62,6 @@ export default {
           });
 
           this.presignedUrl = response.data.url;
-          console.log('Pre-signed URL:', this.presignedUrl);
         } catch (error) {
           console.error('Error getting pre-signed URL:', error);
           this.successMessage = '';

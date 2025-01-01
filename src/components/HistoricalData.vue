@@ -5,6 +5,7 @@
       <input type="date" v-model="startDate" class="input-field" />
       <input type="date" v-model="endDate" class="input-field" />
       <button @click="fetchData" class="btn">Fetch Data</button>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
     <table v-if="data.length" class="data-table">
       <thead>
@@ -20,6 +21,7 @@
         </tr>
       </tbody>
     </table>
+    <button @click="downloadCSV" class="btn">Download CSV</button>
   </div>
 </template>
 
@@ -32,12 +34,22 @@ export default {
     return {
       startDate: '',
       endDate: '',
-      data: []
+      data: [],
+      errorMessage: ''
     }
   },
   methods: {
     async fetchData() {
       if (this.startDate && this.endDate) {
+        if (new Date(this.startDate) > new Date(this.endDate)) {
+          this.errorMessage = 'Start date must be less than or equal to end date.';
+          this.data = []; // Clear the table data
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 3000); // Clear the error message after 3 seconds
+          return;
+        }
+
         try {
           const token = sessionStorage.getItem('authToken');
 
@@ -52,25 +64,45 @@ export default {
           });
 
           const data = response.data;
+          console.log('API response data:', data); // Log the response data
 
           if (data && Array.isArray(data)) {
             this.data = data;
-            console.log('Updated data:', this.data); // Log the updated data
+            this.errorMessage = '';
           } else {
             console.error('Unexpected data format:', data);
+            this.errorMessage = 'Unexpected data format received from the server.';
           }
         } catch (error) {
           if (error.response) {
             console.error('Error response data:', error.response.data); // Log the error response data
             console.error('Error response status:', error.response.status); // Log the error response status
             console.error('Error response headers:', error.response.headers); // Log the error response headers
+            this.errorMessage = `Error: ${error.response.data.message || 'Failed to fetch data.'}`;
           } else {
             console.error('Error message:', error.message); // Log the error message
+            this.errorMessage = 'Failed to fetch data. Please try again.';
           }
         }
       } else {
-        alert('Please select both start and end dates.');
+        this.errorMessage = 'Please select both start and end dates.';
       }
+    },
+    downloadCSV() {
+      const csvContent = [
+        ['Date', 'Energy Consumption (KWt)'],
+        ...this.data.map(entry => [entry.Date, entry.Energy])
+      ]
+        .map(e => e.join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'historical_data.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   }
 }
@@ -134,5 +166,9 @@ export default {
 
 .data-table tr:hover {
   background-color: #ddd;
+}
+.error-message {
+  color: red;
+  margin-left: 10px;
 }
 </style>

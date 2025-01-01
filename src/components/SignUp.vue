@@ -33,22 +33,31 @@ export default {
     };
   },
   methods: {
+    validatePassword(password) {
+      const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return regex.test(password);
+    },
     async signUp() {
+      if (!this.validatePassword(this.password)) {
+        this.errorMessage = 'Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one symbol.';
+        return;
+      }
+
       try {
         const response = await axios.post(process.env.VUE_APP_SIGNUP_API_URL, {
           username: this.username,
           password: this.password,
           email: this.email,
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
         });
         console.log('Sign-up successful:', response.data);
-        this.$router.push('/dashboard'); // Redirect to dashboard after successful sign-up
+        this.$router.push('/');
       } catch (error) {
         console.error('Error signing up:', error);
-        this.errorMessage = 'Failed to sign up. Please check your details and try again.';
+        if (error.response) {
+          this.errorMessage = error.response.data.message || 'Sign-up failed. Please try again.';
+        } else {
+          this.errorMessage = 'Sign-up failed. Please try again.';
+        }
       }
     }
   }

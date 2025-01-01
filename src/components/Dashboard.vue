@@ -10,9 +10,9 @@
     <div class="sections">
       <ManualInput />
       <CsvUpload />
-      
     </div>
     <HistoricalData />
+    <VisualizeTrends />
   </div>
 </template>
 
@@ -22,6 +22,7 @@ import CsvUpload from './CsvUpload.vue'
 import HistoricalData from './HistoricalData.vue'
 import ThresholdAlerts from './ThresholdAlerts.vue'
 import SignOut from './SignOut.vue'
+import VisualizeTrends from './VisualizeTrends.vue'
 
 export default {
   name: 'DashboardPage',
@@ -30,9 +31,10 @@ export default {
     CsvUpload,
     HistoricalData,
     ThresholdAlerts,
-    SignOut
+    SignOut,
+    VisualizeTrends
   }
-};
+}
 </script>
 
 <style scoped>
