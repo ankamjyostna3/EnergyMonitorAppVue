@@ -19,7 +19,6 @@ export default {
           return;
         }
 
-        console.log('Token:', token);
 
 
         // Call the backend API to sign out

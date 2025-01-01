@@ -2,79 +2,43 @@
   <div class="visualize-container">
     <h2>Visualize Energy Consumption Trends</h2>
     <div class="button-group">
-      <button @click="fetchData('weekly')" class="btn">Weekly</button>
-      <button @click="fetchData('monthly')" class="btn">Monthly</button>
-      <button @click="fetchData('yearly')" class="btn">Yearly</button>
+      <button @click="fetchData('daily')" class="btn" name="daily">Daily</button>
+      <button @click="fetchData('weekly')" class="btn" name="weekly">Weekly</button>
+      <button @click="fetchData('monthly')" class="btn" name="monthly">Monthly</button>
+     
     </div>
-    <div v-if="outputlength > 0" class="chart-container">
-      <line-chart :chart-data="chartData" :options="chartOptions"></line-chart>
-    </div>
+    <div ref="chart" class="chart-container"></div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
- import { Line } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
-
-ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
+import * as d3 from 'd3'
 
 export default {
   name: 'VisualizeTrends',
-  components: {
-     'line-chart': Line
-  },
   data() {
     return {
       data: {},
       errorMessage: '',
-      outputlength: 0,
-      chartData: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Energy Consumption (KWt)',
-            backgroundColor: 'rgba(66, 185, 131, 0.2)',
-            borderColor: '#42b983',
-            pointBackgroundColor: '#42b983',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#42b983',
-            data: []
-          }
-        ]
-      },
+      chartData: [],
+      label: [],
       chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'day'
-            },
-            title: {
-              display: true,
-              text: 'Date'
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Energy Consumption (KWt)'
-            }
-          }
-        }
+        width: 800,
+        height: 400,
+        margin: { top: 20, right: 30, bottom: 30, left: 40 }
       }
     }
   },
   methods: {
-    async fetchData(period) {
+    
+    async fetchData(action) {
+      console.log('action:', action);
       try {
         const token = sessionStorage.getItem('authToken');
 
-        const response = await axios.get(process.env.VUE_APP_visualize_trends_URL + `?period=${period}`, {
+        const response = await axios.get(process.env.VUE_APP_visualize_trends_URL, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -84,7 +48,7 @@ export default {
 
         if (response.data && response.data.trends) {
           this.data = response.data.trends;
-          this.updateChartData(period);
+          this.updateChartData(action);
         } else {
           console.error('Unexpected data format:', response.data);
           this.errorMessage = 'Unexpected data format received from the server.';
@@ -96,24 +60,85 @@ export default {
         this.data = {}; // Ensure data is an object
       }
     },
-    updateChartData(period) {
+    updateChartData(action) {
+      
       let trends = {};
-      if (period === 'weekly') {
+      
+      if (action === 'weekly') {
         trends = this.data.weeklyTrends;
-      } else if (period === 'monthly') {
+      } else if (action === 'monthly') {
         trends = this.data.monthlyTrends;
-      } else if (period === 'yearly') {
-        trends = this.data.yearlyTrends;
+      } else if (action === 'daily') {
+        trends = this.data.dailyTrends;
       }
+
       if (trends && typeof trends === 'object') {
-        this.chartData.labels = Object.keys(trends);
-        this.chartData.datasets[0].data = Object.values(trends);
-        this.outputlength = this.chartData.labels.length;
-      } else {
-        this.chartData.labels = [];
-        this.chartData.datasets[0].data = [];
+        this.label = Object.keys(trends);
+        console.log('Labels:', this.label);
+        this.chartData = Object.values(trends);
+        console.log('chartData:', this.chartData); // Log the labels
+       // this.chartData = Object.keys(trends).map(date => ({
+        //  date: date,
+         // energyUsage: trends[date]
+       // }));
        
+       // console.log('Chart Data:', this.chartData); // Log the chart data
+        this.renderChart();
+      } else {
+        this.chartData = [];
       }
+    },
+    renderChart() {
+      const { width, height, margin } = this.chartOptions;
+      const data = this.chartData.map((d, i) => ({ label: this.label[i], value: d }))
+      console.log('Data:', data); // Log the data
+
+      // Clear any existing chart
+      d3.select(this.$refs.chart).selectAll('*').remove();
+
+      const svg = d3.select(this.$refs.chart)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+      // const x = d3.scaleBand()
+      //   .domain(d3.extent(this.chartData, d => d.date))
+      const x = d3.scaleBand()
+          .domain(data.map(d => d.label))
+        .range([0, width - margin.left - margin.right]);
+
+        // const x = d3.scaleBand()
+        //   .domain(data.map(d => d.label))
+        //   .range([0, width])
+        //   .padding(0.1)
+  
+
+
+      // 
+      const y = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.value)])
+        .nice()
+        .range([height - margin.top - margin.bottom, 0]);
+
+        const line = d3.line()
+          .x(d => x(d.label))
+          .y(d => y(d.value))
+
+      svg.append('g')
+        .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+
+      svg.append('g')
+        .call(d3.axisLeft(y));
+
+      svg.append('path')
+        .datum(data  )
+        .attr('fill', 'none')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1.5)
+        .attr('d', line);
     }
   }
 }
