@@ -36,11 +36,12 @@ export default {
         const token = sessionStorage.getItem('authToken');
 
         // Call the backend API to get the alerts
-        const response = await axios.get(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_visualize_trends_ENDPOINT, {
+        const response = await axios.get(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_ALERTS_ENDPOINT, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
+        console.log(response);
 
 this.threshold = response.data.Threshold;
       
@@ -55,13 +56,15 @@ this.threshold = response.data.Threshold;
           const token = sessionStorage.getItem('authToken');
 
           // Call the backend API to submit the alert
-          await axios.post(process.env.VUE_APP_ALERTS_API_URL, {
+          const res = await axios.post(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_ALERTS_ENDPOINT, {
             threshold: this.alertInput
           }, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
+console.log(res);
+
           this.alertInput = '';
           this.errorMessage = '';
           this.showModal = false;

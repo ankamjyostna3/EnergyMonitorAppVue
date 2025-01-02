@@ -39,3 +39,5 @@ To run the unit tests, use the following command:
 ```
 npm run test:unit 
 ```
+
+For details about Backend API. visit the [EnergyMonitorAppAPI](https://github.com/ankamjyostna3/EnergyMonitorAppAPI).

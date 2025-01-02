@@ -38,7 +38,7 @@ export default {
       try {
         const token = sessionStorage.getItem('authToken');
 
-        const response = await axios.get(process.env.VUE_APP_visualize_trends_URL, {
+        const response = await axios.get(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_VISUALIZE_TRENDS_ENDPOINT, {
           headers: {
             Authorization: `Bearer ${token}`
           }
