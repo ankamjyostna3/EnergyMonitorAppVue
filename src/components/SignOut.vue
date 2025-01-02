@@ -22,7 +22,7 @@ export default {
 
 
         // Call the backend API to sign out
-        await axios.post(process.env.VUE_APP_SIGNOUT_API_URL, {}, {
+        await axios.post(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_SIGNOUT_ENDPOINT, {}, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`

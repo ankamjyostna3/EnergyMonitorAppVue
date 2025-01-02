@@ -53,7 +53,7 @@ export default {
         }
 
 
-        const response = await axios.post(process.env.VUE_APP_ENERGY_INPUT_API_URL, {
+        const response = await axios.post(process.env.VUE_APP_ROOT_API_URL+process.env.VUE_APP_ENERGY_INPUT_ENDPOINT, {
           energy: this.energy,
           date: this.date
         }, {
@@ -62,7 +62,7 @@ export default {
             'Authorization': `Bearer ${token}` // Include the token in the Authorization header
           }
         });
-
+console.log('response:', response);
 
         if (response.status === 200 && response.data.success) {
           this.successMessage = 'Energy data saved successfully!';

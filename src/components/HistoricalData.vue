@@ -53,7 +53,7 @@ export default {
         try {
           const token = sessionStorage.getItem('authToken');
 
-          const response = await axios.get(process.env.VUE_APP_ENERGY_HISTORY_API_URL, {
+          const response = await axios.get(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_ENERGY_HISTORY_ENDPOINT, {
             params: {
               startDate: this.startDate,
               endDate: this.endDate

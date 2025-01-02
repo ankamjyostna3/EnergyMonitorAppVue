@@ -1,24 +1,41 @@
-# vue-pge-app
+# Energy Monitor App Vue
 
-## Project setup
-```
+This is a Vue.js application for monitoring energy consumption. The app allows users to sign in, sign up, input energy data, view energy history, and visualize energy consumption trends.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Running Tests](#running-tests)
+
+## Installation
+
+To get started with the project, clone the repository and install the dependencies:
+
+```sh
+git clone https://github.com/ankamjyostna3/EnergyMonitorAppVue
+cd EnergyMonitorAppVue
+
 npm install
 ```
 
-### Compiles and hot-reloads for development
+For more information on installing Vue.js, visit the [Vue.js Installation Guide](https://v2.vuejs.org/v2/guide/installation.html).
+
+
+## Configuration
+Copy .env.example as .env
+
+## Usage
+To start the development server, run:
 ```
 npm run serve
 ```
+This will start the development server and you can view the application in your browser at http://localhost:8080.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Running Tests
+To run the unit tests, use the following command:
 
-### Lints and fixes files
 ```
-npm run lint
+npm run test:unit 
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

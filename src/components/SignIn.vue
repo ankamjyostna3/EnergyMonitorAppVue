@@ -31,7 +31,7 @@
       async signIn() {
         console.log('Signing in...');
         try {
-          const response = await axios.post(process.env.VUE_APP_LOGIN_API_URL, {
+          const response = await axios.post(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_LOGIN_ENDPOINT, {
             username: this.username,
             password: this.password,
           }, {
@@ -39,22 +39,25 @@
               'Content-Type': 'application/json',
             }
           });
-          console.log('Sign-in successful:', response);
-          // Save the token in session storage
-        sessionStorage.setItem('authToken', response.data.token);
+          
+          console.log('Sign-in response:', response);
 
-          this.$router.push('/dashboard'); // Redirect on successful sign-in
+      if (response.data && response.data.token) {
+      console.log('Sign-in successful:', response);
+      // Save the token in session storage
+      sessionStorage.setItem('authToken', response.data.token);
+      this.$router.push('/dashboard'); // Redirect on successful sign-in
+    } else {
+      console.error('No token received in response:', response);
+      this.errorMessage = 'Server is down. Please try again later.';
+    }
         } catch (error) {
           console.error('Error signing in:', error);
           if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           this.errorMessage = 'Failed to sign in. Please check your credentials and try again.';
         } else if (error.request) {
-          // The request was made but no response was received
           this.errorMessage = 'Server is down. Please try after some time.';
         } else {
-          // Something happened in setting up the request that triggered an Error
           this.errorMessage = 'An error occurred. Please try again.';
         }
         }

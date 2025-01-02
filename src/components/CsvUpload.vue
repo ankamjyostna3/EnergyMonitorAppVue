@@ -51,7 +51,7 @@ export default {
           const token = sessionStorage.getItem('authToken');
 
           // Request a pre-signed URL from the backend
-          const response = await axios.get(process.env.VUE_APP_ENERGY_INPUT_UPLOAD_API_URL, {
+          const response = await axios.get(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_ENERGY_INPUT_UPLOAD_ENDPOINT, {
             params: {
               fileName: this.file.name,
               fileType: this.file.type
@@ -99,7 +99,7 @@ export default {
         const token = sessionStorage.getItem('authToken');
 
         // Submit the pre-signed URL to the backend
-        const response = await axios.post(process.env.VUE_APP_ENERGY_INPUT_UPLOAD_API_URL, {
+        const response = await axios.post(process.env.VUE_APP_ROOT_API_URL + process.env.VUE_APP_ENERGY_INPUT_UPLOAD_ENDPOINT, {
           s3_url: this.presignedUrl
         }, {
           headers: {

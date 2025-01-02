@@ -44,7 +44,7 @@ export default {
       }
 
       try {
-        const response = await axios.post(process.env.VUE_APP_SIGNUP_API_URL, {
+        const response = await axios.post(process.env.VUE_APP_ROOT_API_URL+process.env.VUE_APP_SIGNUP_ENDPOINT, {
           username: this.username,
           password: this.password,
           email: this.email,
